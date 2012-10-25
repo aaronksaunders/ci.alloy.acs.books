@@ -1,5 +1,5 @@
 function S4() {
-    return ((1 + Math.random()) * 65536 | 0).toString(16).substring(1);
+	return ((1 + Math.random()) * 65536 | 0).toString(16).substring(1);
 }
 
 function guid() {
@@ -30,7 +30,8 @@ function Sync(model, method, opts) {
 					opts.success && opts.success(e[object_name][0]), model.trigger("fetch");
 					return;
 				}
-				opts.error && opts.error();
+				Ti.API.error(e);
+				opts.error && opts.error(e.error && e.message || e);
 			});
 			break;
 		case "read":
@@ -58,13 +59,14 @@ function Sync(model, method, opts) {
 			Ti.API.info(' updating object with id ' + model.id);
 
 			var params = model.toJSON(), id_name = object_name.replace(/s+$/, "") + "_id";
-			params[id_name] = model.id, object_method.update(params, function(e) {
+			object_method.update(params, function(e) {
 				if (e.success) {
 					model.meta = e.meta;
 					opts.success && opts.success(e[object_name][0]), model.trigger("fetch");
 					return;
 				}
-				opts.error && opts.error();
+				Ti.API.error(e);
+				opts.error && opts.error(e.error && e.message || e);
 			}), model.trigger("fetch");
 			break;
 		case "delete":
@@ -85,7 +87,8 @@ function Sync(model, method, opts) {
 					opts.success && opts.success({}), model.trigger("fetch");
 					return;
 				}
-				opts.error && opts.error();
+				Ti.API.error(e);
+				opts.error && opts.error(e.error && e.message || e);
 			});
 	}
 }
@@ -103,7 +106,8 @@ function getObject(_model, _opts) {
 				return;
 			}
 		} else {
-			_opts.error && _opts.error();
+			Ti.API.error(e);
+			_opts.error && _opts.error(e.error && e.message || e);
 		}
 	});
 }
@@ -117,17 +121,17 @@ function getObjects(_model, _opts) {
 	Ti.API.info(" querying for all objects of type " + _model.config.settings.object_name + " " + (_opts.data && _opts.data.q));
 	object_method.query((_opts.data || {}), function(e) {
 		if (e.success) {
-			if (e[object_name].length !== 0) {
-				var retArray = [];
-				for (var i in e[object_name]) {
-					retArray.push(e[object_name][i]);
-				}
-				_model.meta = e.meta;
-				_opts.success && _opts.success(retArray), _model.trigger("fetch");
-				return;
+			var retArray = [];
+			for (var i in e[object_name]) {
+				retArray.push(e[object_name][i]);
 			}
-		} else
-			opts.error && opts.error();
+			_model.meta = e.meta;
+			_opts.success && _opts.success(retArray), _model.trigger("fetch");
+			return;
+		} else {
+			Ti.API.error(e);
+			_opts.error && _opts.error(e.error && e.message || e);
+		}
 	});
 }
 
@@ -149,8 +153,10 @@ function searchObjects(_model, _opts) {
 				_opts.success && _opts.success(retArray), _model.trigger("fetch");
 				return;
 			}
-		} else
-			opts.error && opts.error();
+		} else {
+			Ti.API.error(e);
+			_opts.error && _opts.error(e.error && e.message || e);
+		}
 	});
 }
 
