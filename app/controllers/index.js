@@ -63,35 +63,50 @@ function do_the_magic() {
     // DELETE - destroy triggers the CRUD delete operation
     for ( i = books.length - 1; i >= 0; i--) {
         var model = books.at(i);
-        model.destroy();
+        //model.destroy();
     };
-    
+
     aUser.destroy();
 }
 
 //
 // CREATE THE USER
 //
-var aUser = Alloy.createModel('User', {
-    username : "testuser",
-    password : "password",
-    password_confirmation : "password",
-    first_name : "Aaron",
-    last_name : "Saunders"
-});
-aUser.save({}, {
-    success : function(_d) {
-        Ti.API.info(' SUCCESS ' + JSON.stringify(_d));
-        Ti.API.info(' model stringified ' + _d.get("username"));
+var options = {
+    success : function(_m, _r) {
+        Ti.API.info(' SUCCESS ' + JSON.stringify(_m));
+        Ti.API.info(' model stringified ' + _m.get("username"));
 
-        Ti.API.info(' stored session ' + _d.retrieveStoredSession());
+        Ti.API.info(' stored session ' + _m.retrieveStoredSession());
 
         do_the_magic();
     },
-    error : function(_e) {
+    error : function(_m, _e) {
         Ti.API.info(' ERROR ' + JSON.stringify(_e));
-        do_the_magic();
+
+        if (_e === "Username is already taken") {
+            loginUser();
+        }
+
     }
-});
+};
+
+function createUser() {
+    var aUser = Alloy.createModel('User', {
+        username : "testuser",
+        password : "password",
+        password_confirmation : "password",
+        first_name : "Aaron",
+        last_name : "Saunders"
+    });
+    aUser.save({}, options);
+}
+
+function loginUser() {
+    var aUser = Alloy.createModel('User');
+    aUser.login("testuser", "password", options);
+}
 
 $.index.open();
+
+createUser();

@@ -1,22 +1,20 @@
 exports.definition = {
 
     config : {
-    "columns": {
-        "active": "boolean"
-    },
-    "defaults": {},
-    "adapter": {
-        "type": "acs",
-    },
-    "settings": {
-        "object_name": "book",
-        "object_method": "Objects"
-    }
+        "columns" : {
+            "active" : "boolean"
+        },
+        "defaults" : {},
+        "adapter" : {
+            "type" : "acs",
+            "collection_name" : "books",
+            "custom" : true
+        },
+
     },
 
     extendModel : function(Model) {
         _.extend(Model.prototype, {
-
 
         });
         // end extend

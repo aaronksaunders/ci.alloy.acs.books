@@ -8,10 +8,6 @@ exports.definition = {
             "type" : "acs",
             "collection_name" : "users"
         },
-        "settings" : {
-            "object_name" : "users",
-            "object_method" : "Users"
-        }
     },
     extendModel : function(Model) {
 
