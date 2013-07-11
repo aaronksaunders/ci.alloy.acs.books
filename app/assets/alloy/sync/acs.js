@@ -12,7 +12,7 @@ function InitAdapter(config) {
     Cloud = require("ti.cloud"), Cloud.debug = !0, config.Cloud = Cloud;
 }
 
-function Sync(model, method, opts) {
+function Sync(method, model, opts) {
 
     var object_name = model.config.adapter.collection_name;
     var isCustomObject = model.config.adapter.custom;
